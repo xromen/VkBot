@@ -1,5 +1,6 @@
 from VkBot import VKBot
 import pyowm
+from os import getcwd
 
 
 
@@ -10,8 +11,8 @@ Bot = VKBot(token = token, id = 189821964)
 #Bot.get_pokemon(name='pikachu')
 #print(Bot.get_user('xromen')[0]['city'])
 for event in Bot.longpoll.listen():
+    print(event.object.liker_id)
     if Bot.event_is_message(event):
-
         #Слушаем longpoll, если пришло сообщение то:
         if 'цитата' in Bot.get_message_text(event).lower(): #Если написали заданную фразу
             quote = Bot.get_quote()
@@ -82,3 +83,14 @@ for event in Bot.longpoll.listen():
             except:
                 m = Bot.get_message_pokemon(p=pok[0])
                 Bot.send_message(peer_id = Bot.get_peer_id(event), message = m)
+
+        if 'гиф ' in Bot.get_message_text(event).lower(): #Если написали заданную фразу
+            print(1)
+            q = Bot.get_message_text(event)[len('гиф ')::]
+            url = Bot.get_gif_url(quote=q)
+            print(url)
+            with open(getcwd() + '\\imgs\\temp.gif', 'wb') as f:
+                Bot.download(file = f, url = url)
+            doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '\\imgs\\temp.gif')
+            #print(doc)
+            Bot.send_message(peer_id = Bot.get_peer_id(event), attachment = 'doc' + str(doc['doc']['owner_id']) + '_' + str(doc['doc']['id']))

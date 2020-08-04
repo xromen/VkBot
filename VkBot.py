@@ -1,11 +1,8 @@
-import vk_api
+import vk_api, requests, json, datetime
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.utils import get_random_id
-import requests
 from bs4 import BeautifulSoup as bs
-import json
-from os import getcwd
-import datetime
+from os import getcwd, remove
 from pokedex import pokedex
 
 
@@ -36,7 +33,7 @@ class VKBot:
     def message_from_chat(self, event):
         return event.from_chat
 
-    def send_message(self, message = None, peer_id = None, user_id = None, chat_id = None, attachment = None, dont_parse_links=0):
+    def send_message(self, message = None, peer_id = None, user_id = None, chat_id = None, attachment = None, dont_parse_links=1):
         print(f'send message {message} to user:{user_id} or chat:{chat_id} or peer: {peer_id}')
         self.vk.messages.send( #Отправляем сообщение
             user_id=user_id,
@@ -44,13 +41,17 @@ class VKBot:
             peer_id = peer_id,
             message=message,
             attachment = attachment,
-            random_id = get_random_id(),
-            dont_parse_links=dont_parse_links)
+            random_id = get_random_id())
 
     def send_img_to_serv(self, peer_id, week):
         print(f'send photo message to {peer_id}')
         photo = self.upload.photo_messages(photos = getcwd() + '\\imgs\\' + str(week) + '.png', peer_id = peer_id)
         return photo
+
+    def send_doc_to_serv(self, peer_id, file):
+        doc = self.upload.document(doc = file, message_peer_id = peer_id)
+        remove(file)
+        return doc
 
     def send_img_message(self, peer_id, week):
         photo = send_img_to_serv(peer_id = peer_id, week = week)
@@ -91,3 +92,14 @@ class VKBot:
 
     def get_message_pokemon(self, p):
         return f"Номер: {p['number']}\nИмя: {p['name']}\nВид: {p['species']}\nТип: {' '.join(p['types'])}\n     Способности:\nОбычные: {' '.join(p['abilities']['normal'])}\nСкрытые: {' '.join(p['abilities']['hidden'])}\nГруппа яйца: {' '.join(p['eggGroups'])}\nПол: {' '.join(str(i) for i in p['gender'])}\nРост: {p['height']}\nВес: {p['weight']}\nСтадия эволюции: {p['family']['evolutionStage']}\nВсе его эволюции: {' '.join(p['family']['evolutionLine'])}\nСтартовый: {p['starter']}\nЛегендарный: {p['legendary']}\nМифический: {p['mythical']}\nUltra Beast: {p['ultraBeast']}\nMega: {p['mega']}\nФотка: {p['sprite']}\nОписание: {p['description']}"
+
+    def get_gif_url(self, quote):
+        key = 'K793Fk3hMprn2nFtY7XiwSyHVsMcgmJX'
+        url = 'https://api.giphy.com/v1/gifs/search'
+        req = requests.get(url=url, params = {'api_key' : key, 'q' : quote, 'limit' : 1, 'random_id' : key, 'lang' : 'ru'})
+        js = json.loads(req.content)
+        return js['data'][0]['images']['original']['url']
+
+    def download(self, file, url):
+        req = requests.get(url)
+        file.write(req.content)
