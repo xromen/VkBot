@@ -91,6 +91,6 @@ for event in Bot.longpoll.listen():
             print(url)
             with open(getcwd() + '/imgs/temp.gif', 'wb') as f:
                 Bot.download(file = f, url = url)
-            doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '\\imgs\\temp.gif')
+            doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '/imgs/temp.gif')
             #print(doc)
             Bot.send_message(peer_id = Bot.get_peer_id(event), attachment = 'doc' + str(doc['doc']['owner_id']) + '_' + str(doc['doc']['id']))
