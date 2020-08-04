@@ -89,7 +89,7 @@ for event in Bot.longpoll.listen():
             q = Bot.get_message_text(event)[len('гиф ')::]
             url = Bot.get_gif_url(quote=q)
             print(url)
-            with open(getcwd() + '\\imgs\\temp.gif', 'wb') as f:
+            with open(getcwd() + '/imgs/temp.gif', 'wb') as f:
                 Bot.download(file = f, url = url)
             doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '\\imgs\\temp.gif')
             #print(doc)
