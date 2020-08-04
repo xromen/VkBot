@@ -31,7 +31,6 @@ nanolife==1.0.3
 numexpr==2.7.0
 numpy==1.18.0
 parso==0.6.2
-Pillow==7.0.0
 pluggy==0.13.1
 pokebase==1.3.0
 pokedex.py==1.1.2
