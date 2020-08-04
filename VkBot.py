@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup as bs
 import json
 from os import getcwd
 import datetime
+from pokedex import pokedex
 
 
 class VKBot:
@@ -35,7 +36,7 @@ class VKBot:
     def message_from_chat(self, event):
         return event.from_chat
 
-    def send_message(self, message = None, peer_id = None, user_id = None, chat_id = None, attachment = None):
+    def send_message(self, message = None, peer_id = None, user_id = None, chat_id = None, attachment = None, dont_parse_links=0):
         print(f'send message {message} to user:{user_id} or chat:{chat_id} or peer: {peer_id}')
         self.vk.messages.send( #Отправляем сообщение
             user_id=user_id,
@@ -43,7 +44,8 @@ class VKBot:
             peer_id = peer_id,
             message=message,
             attachment = attachment,
-            random_id = get_random_id())
+            random_id = get_random_id(),
+            dont_parse_links=dont_parse_links)
 
     def send_img_to_serv(self, peer_id, week):
         print(f'send photo message to {peer_id}')
@@ -68,3 +70,24 @@ class VKBot:
 
     def get_today(self):
         return datetime.date.weekday(datetime.date.today())
+
+    def get_fish_text(self, num):
+        req = requests.get(url = 'https://fish-text.ru/get', params = {'type' : 'sentence', 'number' : num})
+        js = json.loads(req.content)
+        return js['text']
+
+    def get_anekdot(self, num):
+        req = requests.get(url = 'http://rzhunemogu.ru/RandJSON.aspx?CType=' + str(num))
+        return req.content.decode('cp1251')[len('{"content":"'):-2:]
+
+    def get_pokemon(self, name = None, id = None):
+        pok = pokedex.Pokedex(version='v1', user_agent='ExampleApp (https://example.com, v2.0.1)')
+        if name:
+            pokemon = pok.get_pokemon_by_name(name)
+        elif id:
+            pokemon = pok.get_pokemon_by_number(id)
+        #print(pokemon)
+        return pokemon
+
+    def get_message_pokemon(self, p):
+        return f"Номер: {p['number']}\nИмя: {p['name']}\nВид: {p['species']}\nТип: {' '.join(p['types'])}\n     Способности:\nОбычные: {' '.join(p['abilities']['normal'])}\nСкрытые: {' '.join(p['abilities']['hidden'])}\nГруппа яйца: {' '.join(p['eggGroups'])}\nПол: {' '.join(str(i) for i in p['gender'])}\nРост: {p['height']}\nВес: {p['weight']}\nСтадия эволюции: {p['family']['evolutionStage']}\nВсе его эволюции: {' '.join(p['family']['evolutionLine'])}\nСтартовый: {p['starter']}\nЛегендарный: {p['legendary']}\nМифический: {p['mythical']}\nUltra Beast: {p['ultraBeast']}\nMega: {p['mega']}\nФотка: {p['sprite']}\nОписание: {p['description']}"
