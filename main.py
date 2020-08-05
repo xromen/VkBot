@@ -99,16 +99,18 @@ def wait_events():
                 if url == None:
                     Bot.send_message(peer_id = Bot.get_peer_id(event), message = 'К сожалению ничего не нашлось. Попробуйте изменить запрос.')
                 else:
-                    with open(getcwd() + '\\imgs\\temp.gif', 'wb') as f:
+                    with open(getcwd() + '/imgs/temp.gif', 'wb') as f:
                         Bot.download(file = f, url = url)
-                    doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '\\imgs\\temp.gif')
+                    doc = Bot.send_doc_to_serv(peer_id = Bot.get_peer_id(event), file = getcwd() + '/imgs/temp.gif')
                     Bot.send_message(peer_id = Bot.get_peer_id(event), attachment = 'doc' + str(doc['doc']['owner_id']) + '_' + str(doc['doc']['id']))
 
 
-
+wait_events()
+'''
 events = threading.Thread(target=wait_events)
 Game = threading.Thread(target=game)
 events.start()
 Game.start()
 events.join()
 Game.join()
+'''
