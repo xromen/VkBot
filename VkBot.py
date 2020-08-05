@@ -4,6 +4,7 @@ from vk_api.utils import get_random_id
 from bs4 import BeautifulSoup as bs
 from os import getcwd, remove
 from pokedex import pokedex
+from random import randint
 
 
 class VKBot:
@@ -87,7 +88,6 @@ class VKBot:
             pokemon = pok.get_pokemon_by_name(name)
         elif id:
             pokemon = pok.get_pokemon_by_number(id)
-        #print(pokemon)
         return pokemon
 
     def get_message_pokemon(self, p):
@@ -96,9 +96,12 @@ class VKBot:
     def get_gif_url(self, quote):
         key = 'K793Fk3hMprn2nFtY7XiwSyHVsMcgmJX'
         url = 'https://api.giphy.com/v1/gifs/search'
-        req = requests.get(url=url, params = {'api_key' : key, 'q' : quote, 'limit' : 1, 'random_id' : key, 'lang' : 'ru'})
+        req = requests.get(url=url, params = {'api_key' : key, 'q' : quote, 'limit' : 50, 'random_id' : key, 'lang' : 'ru'})
         js = json.loads(req.content)
-        return js['data'][0]['images']['original']['url']
+        try:
+            return js['data'][randint(0,49)]['images']['original']['url']
+        except:
+            return None
 
     def download(self, file, url):
         req = requests.get(url)
