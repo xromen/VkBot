@@ -58,7 +58,7 @@ PyTweening==1.0.3
 pytz==2020.1
 requests==2.22.0
 rope==0.16.0
-rsa==4.6
+rsa==4.7
 selenium==3.141.0
 simplejson==3.17.0
 six==1.12.0
